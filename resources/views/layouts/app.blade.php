@@ -13,22 +13,26 @@
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+        <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     </head>
     <body class="font-sans antialiased">
-        <div class="min-h-screen bg-gray-100">
-            @include('layouts.navigation')
-
-            <!-- Page Heading -->
-            @isset($header)
-                <header class="bg-white shadow">
-                    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-                        {{ $header }}
-                    </div>
-                </header>
-            @endisset
+        <div class="min-h-screen bg-gray-100 flex">
+            <aside id="sidebar" class="top-0 left-0 z-40 w-64 h-screen">
+                <div class="h-full px-3 py-4 overflow-y-auto bg-gray-50 dark:bg-gray-800">
+                    <ul class="space-y-2 font-medium">
+                        @foreach ($chats as $chat)
+                        <li>
+                            <a href="{{ route('chats.show', $chat->id) }}" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+                                <span class="ms-3">{{ $chat->name }}</span>
+                            </a>
+                        </li>
+                        @endforeach
+                    </ul>
+                </div>
+            </aside>
 
             <!-- Page Content -->
-            <main>
+            <main class="grow">
                 {{ $slot }}
             </main>
         </div>
