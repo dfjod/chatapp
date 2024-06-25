@@ -32,7 +32,10 @@
             </aside>
 
             <!-- Page Content -->
-            <main class="grow">
+            <main class="grow h-screen flex flex-col max-w-7xl">
+                <div class="w-full">
+                    @include('layouts.navigation')
+                </div>
                 {{ $slot }}
             </main>
         </div>

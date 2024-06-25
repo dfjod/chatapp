@@ -37,8 +37,9 @@ class ChatController extends Controller
      */
     public function show(Chat $chat)
     {
+        $currentChat = $chat;
         $messages = Chat::find($chat->id)->messages;
-        return view('chat', compact('messages'));
+        return view('chat', compact('messages', 'currentChat'));
     }
 
     /**
