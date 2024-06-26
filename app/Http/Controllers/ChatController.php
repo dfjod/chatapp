@@ -37,8 +37,13 @@ class ChatController extends Controller
      */
     public function show(Chat $chat)
     {
+        if (auth()->user()->cannot('view', $chat)) {
+            abort(403);
+        }
+
         $currentChat = $chat;
-        $messages = Chat::find($chat->id)->messages;
+        $messages = $chat->messages;
+        
         return view('chat', compact('messages', 'currentChat'));
     }
 
