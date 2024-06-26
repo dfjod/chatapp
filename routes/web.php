@@ -14,6 +14,9 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::resource('chats', ChatController::class);
     Route::post('/chats/{chat}/add-user', [ChatController::class, 'addUser'])->name('chats.addUser');
+    Route::post('/chats/{chat}/promote/{user}', [ChatController::class, 'promoteUser'])->name('chats.promoteUser');
+    Route::post('/chats/{chat}/demote/{user}', [ChatController::class, 'demoteUser'])->name('chats.demoteUser');
+    Route::post('/chats/{chat}/kick/{user}', [ChatController::class, 'kickUser'])->name('chats.kickUser');
     Route::redirect('/', 'chats');
 });
 

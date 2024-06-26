@@ -10,16 +10,16 @@
 
                             <div>
                                 <x-input-label for="name" :value="__('Name')" />
-                                @can('update', $chat)
+                                @can('adminActions', $chat)
                                     <x-text-input id="name" name="name" type="text" class="mt-1 block w-full" :value="old('name', $chat->name)" required autofocus placeholder="{{ __('Name')}}"/>
                                 @endcan
-                                @cannot('update', $chat)
+                                @cannot('adminActions', $chat)
                                     <x-text-input id="name" name="name" type="text" class="mt-1 block w-full" :value="old('name', $chat->name)" required autofocus placeholder="{{ __('Name')}}" disabled/>
                                 @endcannot
                                 <x-input-error class="mt-2" :messages="$errors->get('name')" />
                             </div>
                             <div class="flex gap-3">
-                                @can('update', $chat)                                        
+                                @can('adminActions', $chat)                                        
                                     <div class="flex items-center gap-4">
                                         <x-primary-button>
                                             {{ __('Update') }}
@@ -78,14 +78,61 @@
                                                             {{__('Error')}}
                                                     @endswitch
                                                 </div>
+                                                <div class="hidden sm:flex sm:items-center sm:ms-6">
+                                                    <x-dropdown align="right" width="48">
+                                                        <x-slot name="trigger">
+                                                            <button class="inline-flex items-center p-2 text-sm font-medium text-center text-gray-900 bg-white rounded-lg hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-50" type="button">
+                                                                <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 4 15">
+                                                                    <path d="M3.5 1.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Zm0 6.041a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Zm0 5.959a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z"/>
+                                                                </svg>
+                                                            </button>
+                                                        </x-slot>
+                                                        <x-slot name="content">                                  
+                                                                @can('adminActions', $chat)
+                                                                    @can('ownerActions', $chat)
+                                                                    <!-- Promote user -->
+                                                                    <form method="POST" action="{{ route('chats.promoteUser', compact('chat', 'user')) }}">
+                                                                        @csrf
+                                            
+                                                                        <x-dropdown-link :href="route('chats.promoteUser', compact('chat', 'user'))"
+                                                                                onclick="event.preventDefault();
+                                                                                            this.closest('form').submit();">
+                                                                            {{ __('Promote') }}
+                                                                        </x-dropdown-link>
+                                                                    </form>
+
+                                                                    <!-- Demote user -->
+                                                                    <form method="POST" action="{{ route('chats.demoteUser', compact('chat', 'user')) }}">
+                                                                        @csrf
+                                            
+                                                                        <x-dropdown-link :href="route('chats.demoteUser', compact('chat', 'user'))"
+                                                                                onclick="event.preventDefault();
+                                                                                            this.closest('form').submit();">
+                                                                            {{ __('Demote') }}
+                                                                        </x-dropdown-link>
+                                                                    </form>
+                                                                    @endcan
+                                                                    <!-- Kick user -->
+                                                                    <form method="POST" action="{{ route('chats.kickUser', compact('chat', 'user')) }}">
+                                                                        @csrf
+                                            
+                                                                        <x-dropdown-link :href="route('chats.kickUser', compact('chat', 'user'))"
+                                                                                onclick="event.preventDefault();
+                                                                                            this.closest('form').submit();">
+                                                                            {{ __('Kick') }}
+                                                                        </x-dropdown-link>
+                                                                    </form>
+                                                                @endcan
+                                                            </x-slot>
+                                                    </x-dropdown>
+                                                </div>
                                             </div>
                                         </li>
                                     @endforeach
                                 </ul>
                             </div>
                         </div>
-                        @can('update', $chat)
-                            
+                        @can('adminActions', $chat)
                             <form method="post" action="{{ route('chats.addUser', $chat) }}" class="mt-6 space-y-6">
                                 @csrf
 
@@ -119,7 +166,7 @@
                     </section> 
                 </div>
             </div>
-            @can('delete', $chat)
+            @can('ownerActions', $chat)
                 <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg flex flex-col items-center">
                     <div class="max-w-xl w-full">                    
                         <section class="space-y-6">

@@ -84,7 +84,7 @@ class ChatController extends Controller
      */
     public function update(Request $request, Chat $chat)
     {
-        if (auth()->user()->cannot('update', $chat)) {
+        if (auth()->user()->cannot('adminActions', $chat)) {
             abort(403);
         }
 
@@ -100,7 +100,7 @@ class ChatController extends Controller
 
     public function addUser(Request $request, Chat $chat)
     {
-        if (auth()->user()->cannot('update', $chat)) {
+        if (auth()->user()->cannot('adminActions', $chat)) {
             abort(403);
         }
 
@@ -122,7 +122,7 @@ class ChatController extends Controller
      */
     public function destroy(Chat $chat)
     {
-        if (auth()->user()->cannot('delete', $chat)) {
+        if (auth()->user()->cannot('ownerActions', $chat)) {
             abort(403);
         }
 
@@ -131,5 +131,57 @@ class ChatController extends Controller
         $chat->delete();
 
         return Redirect::route('chats.index');
+    }
+
+    public function promoteUser(Request $request, Chat $chat, User $user)
+    {
+        if (auth()->user()->cannot('ownerActions', $chat)) {
+            abort(403);
+        }
+
+        if (!$chat->users()->where('user_id', $user->id)->exists()) {
+            return Redirect::back()->withErrors(['User not in the chat']);
+        }
+
+        $chat->users()->updateExistingPivot($user->id, ['role' => 1]);
+
+        return Redirect::route('chats.edit', $chat)->with('status', 'user-promoted');
+    }
+
+    public function demoteUser(Request $request, Chat $chat, User $user)
+    {
+        if (auth()->user()->cannot('ownerActions', $chat)) {
+            abort(403);
+        }
+
+        if (!$chat->users()->where('user_id', $user->id)->exists()) {
+            return Redirect::back()->withErrors(['User not in the chat']);
+        }
+
+        $chat->users()->updateExistingPivot($user->id, ['role' => 2]); // Adjust the role as needed
+
+        return Redirect::route('chats.edit', $chat)->with('status', 'user-demoted');
+    }
+
+    public function kickUser(Request $request, Chat $chat, User $user)
+    {
+        if (auth()->user()->cannot('adminActions', $chat)) {
+            abort(403);
+        }
+
+        if (!$chat->users()->where('user_id', $user->id)->exists()) {
+            return Redirect::back()->withErrors(['User not in the chat']);
+        }
+
+        $currentUserRole = $chat->users()->where('user_id', auth()->id())->first()->pivot->role;
+        $userRole = $chat->users()->where('user_id', $user->id)->first()->pivot->role;
+
+        if ($currentUserRole > $userRole) {
+            return Redirect::back()->withErrors(['You do not have permission to kick this user']);
+        }
+
+        $chat->users()->detach($user->id);
+
+        return Redirect::route('chats.edit', $chat)->with('status', 'user-kicked');
     }
 }
