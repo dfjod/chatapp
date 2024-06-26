@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('chat_id')->constrained('chats');
             $table->foreignId('user_id')->constrained('users');
+            $table->unsignedTinyInteger('role')->nullable(false);
             $table->timestamps();
         });
     }

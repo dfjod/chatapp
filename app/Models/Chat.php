@@ -30,6 +30,13 @@ class Chat extends Model
      */
     public function users(): BelongsToMany
     {
-        return $this->belongsToMany(User::class);
+        return $this->belongsToMany(User::class)->withPivot('role');
+    }
+
+    public function getUserRole($userId)
+    {
+        $user = $this->users()->where('user_id', $userId)->first();
+        
+        return $user ? $user->pivot->role : null;
     }
 }

@@ -14,10 +14,19 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-        for ($i=0; $i < 10; $i++) {
-            User::factory()
-                ->hasAttached($i < 5 ? Chat::all()->random(1) : Chat::all()->random(2))
-                ->create();
-        }
+        User::factory()->create([
+            'username' => 'Bob',
+            'email' => 'bob@bob.bob',
+        ]);
+
+        User::factory()->create([
+            'username' => 'Tom',
+            'email' => 'tom@tom.tom',
+        ]);
+
+        User::factory()->create([
+            'username' => 'Von',
+            'email' => 'von@von.von',
+        ]);
     }
 }

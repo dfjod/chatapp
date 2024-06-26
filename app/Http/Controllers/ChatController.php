@@ -44,7 +44,7 @@ class ChatController extends Controller
         $chat->save();
 
         foreach ($users as $user) {
-            $user->chats()->attach($chat->id);
+            $user->chats()->attach($chat->id, ['role' => 0]); // role 0 means owner
         }
 
         return Redirect::route('chats.show', ['chat' => $chat->id]);
@@ -84,6 +84,10 @@ class ChatController extends Controller
      */
     public function update(Request $request, Chat $chat)
     {
+        if (auth()->user()->cannot('update', $chat)) {
+            abort(403);
+        }
+
         $validated = $request->validate([
             'name' => 'required|string',
         ]);
@@ -94,7 +98,12 @@ class ChatController extends Controller
         return Redirect::route('chats.edit', $chat)->with('status', 'chat-updated');
     }
 
-    public function addUser(Request $request, Chat $chat) {
+    public function addUser(Request $request, Chat $chat)
+    {
+        if (auth()->user()->cannot('update', $chat)) {
+            abort(403);
+        }
+
         $validated = $request->validate([
             'username' => 'required|exists:users,username',
         ]);
@@ -102,7 +111,7 @@ class ChatController extends Controller
 
         if (!$chat->users()->where('username', $username)->exists()) {
             $user = User::where('username', $username)->first();
-            $chat->users()->attach($user->id);
+            $chat->users()->attach($user->id, ['role' => 2]); // role 2 means regular user
         }
 
         return Redirect::route('chats.edit', $chat)->with('status', 'user-added');
@@ -113,6 +122,10 @@ class ChatController extends Controller
      */
     public function destroy(Chat $chat)
     {
+        if (auth()->user()->cannot('delete', $chat)) {
+            abort(403);
+        }
+
         $chat->users()->detach();
 
         $chat->delete();

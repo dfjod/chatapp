@@ -37,7 +37,8 @@ class ChatPolicy
      */
     public function update(User $user, Chat $chat): bool
     {
-        //
+        $userRole = $chat->getUserRole($user->id);
+        return $userRole <= 1;
     }
 
     /**
@@ -45,22 +46,7 @@ class ChatPolicy
      */
     public function delete(User $user, Chat $chat): bool
     {
-        //
-    }
-
-    /**
-     * Determine whether the user can restore the model.
-     */
-    public function restore(User $user, Chat $chat): bool
-    {
-        //
-    }
-
-    /**
-     * Determine whether the user can permanently delete the model.
-     */
-    public function forceDelete(User $user, Chat $chat): bool
-    {
-        //
+        $userRole = $chat->getUserRole($user->id);
+        return $userRole === 0;
     }
 }
