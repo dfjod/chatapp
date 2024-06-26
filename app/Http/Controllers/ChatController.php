@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Chat;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Redirect;
 
 class ChatController extends Controller
 {
@@ -13,7 +14,7 @@ class ChatController extends Controller
      */
     public function index()
     {
-        return view('index');
+        return view('chat.index');
     }
 
     /**
@@ -21,7 +22,7 @@ class ChatController extends Controller
      */
     public function create()
     {
-        //
+        return view('chat.create');
     }
 
     /**
@@ -29,7 +30,24 @@ class ChatController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $users = [
+            'current' => User::find(auth()->user()->id),
+            'requested' => User::where('username', $request->username)->first(),
+        ];
+
+        if (!$users['requested']) {
+            return Redirect::back()->withErrors(['username' => 'User not found!']);
+        }
+
+        $chat = new Chat;
+        $chat->name = $users['requested']->username . " & " . $users['current']->username . " chat";
+        $chat->save();
+
+        foreach ($users as $user) {
+            $user->chats()->attach($chat->id);
+        }
+
+        return Redirect::route('chats.show', ['chat' => $chat->id]);
     }
 
     /**
@@ -43,8 +61,8 @@ class ChatController extends Controller
 
         $currentChat = $chat;
         $messages = $chat->messages;
-        
-        return view('chat', compact('messages', 'currentChat'));
+
+        return view('chat.show', compact('messages', 'currentChat'));
     }
 
     /**
