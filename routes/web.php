@@ -13,6 +13,7 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::resource('chats', ChatController::class);
+    Route::post('/chats/{chat}/add-user', [ChatController::class, 'addUser'])->name('chats.addUser');
     Route::redirect('/', 'chats');
 });
 

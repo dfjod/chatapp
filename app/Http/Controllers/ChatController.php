@@ -70,7 +70,13 @@ class ChatController extends Controller
      */
     public function edit(Chat $chat)
     {
-        //
+        $currentUser = auth()->user();
+
+        if ($currentUser->cannot('view', $chat)) {
+            abort(403);
+        }
+
+        return view('chat.edit', compact('chat'));
     }
 
     /**
@@ -78,7 +84,28 @@ class ChatController extends Controller
      */
     public function update(Request $request, Chat $chat)
     {
-        //
+        $validated = $request->validate([
+            'name' => 'required|string',
+        ]);
+
+        $chat->fill($validated);
+        $chat->save();
+
+        return Redirect::route('chats.edit', $chat)->with('status', 'chat-updated');
+    }
+
+    public function addUser(Request $request, Chat $chat) {
+        $validated = $request->validate([
+            'username' => 'required|exists:users,username',
+        ]);
+        $username = $validated['username'];
+
+        if (!$chat->users()->where('username', $username)->exists()) {
+            $user = User::where('username', $username)->first();
+            $chat->users()->attach($user->id);
+        }
+
+        return Redirect::route('chats.edit', $chat)->with('status', 'user-added');
     }
 
     /**
@@ -86,6 +113,10 @@ class ChatController extends Controller
      */
     public function destroy(Chat $chat)
     {
-        //
+        $chat->users()->detach();
+
+        $chat->delete();
+
+        return Redirect::route('chats.index');
     }
 }

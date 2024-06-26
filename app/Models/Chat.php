@@ -12,6 +12,11 @@ class Chat extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'name',
+        'description',
+    ];
+
     /**
      * Get the messages of the chat
      */
