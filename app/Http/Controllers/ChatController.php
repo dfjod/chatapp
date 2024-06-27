@@ -76,7 +76,7 @@ class ChatController extends Controller
             abort(403);
         }
 
-        return view('chat.edit', compact('chat'));
+        return view('chat.edit', compact('chat', 'currentUser'));
     }
 
     /**
@@ -84,7 +84,9 @@ class ChatController extends Controller
      */
     public function update(Request $request, Chat $chat)
     {
-        if (auth()->user()->cannot('adminActions', $chat)) {
+        $currentUser = auth()->user();
+
+        if ($currentUser->cannot('adminActions', $chat)) {
             abort(403);
         }
 
@@ -100,7 +102,9 @@ class ChatController extends Controller
 
     public function addUser(Request $request, Chat $chat)
     {
-        if (auth()->user()->cannot('adminActions', $chat)) {
+        $currentUser = auth()->user();
+
+        if ($currentUser->cannot('adminActions', $chat)) {
             abort(403);
         }
 
@@ -135,8 +139,14 @@ class ChatController extends Controller
 
     public function promoteUser(Request $request, Chat $chat, User $user)
     {
-        if (auth()->user()->cannot('ownerActions', $chat)) {
+        $currentUser = auth()->user();
+        
+        if ($currentUser->cannot('ownerActions', $chat)) {
             abort(403);
+        }
+
+        if ($currentUser->id === $user->id) {
+            return Redirect::back()->withErrors(['Owner can\'t promote himself']);
         }
 
         if (!$chat->users()->where('user_id', $user->id)->exists()) {
@@ -150,8 +160,14 @@ class ChatController extends Controller
 
     public function demoteUser(Request $request, Chat $chat, User $user)
     {
-        if (auth()->user()->cannot('ownerActions', $chat)) {
+        $currentUser = auth()->user();
+        
+        if ($currentUser->cannot('ownerActions', $chat)) {
             abort(403);
+        }
+
+        if ($currentUser->id === $user->id) {
+            return Redirect::back()->withErrors(['Owner can\'t demote himself']);
         }
 
         if (!$chat->users()->where('user_id', $user->id)->exists()) {
@@ -165,8 +181,14 @@ class ChatController extends Controller
 
     public function kickUser(Request $request, Chat $chat, User $user)
     {
-        if (auth()->user()->cannot('adminActions', $chat)) {
+        $currentUser = auth()->user();
+        
+        if ($currentUser->cannot('adminActions', $chat)) {
             abort(403);
+        }
+
+        if ($currentUser->id === $user->id) {
+            return Redirect::back()->withErrors(['User can\'t kick himself out']);
         }
 
         if (!$chat->users()->where('user_id', $user->id)->exists()) {

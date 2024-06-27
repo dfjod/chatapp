@@ -78,6 +78,7 @@
                                                             {{__('Error')}}
                                                     @endswitch
                                                 </div>
+                                                @if ($currentUser->id !== $user->id)
                                                 <div class="hidden sm:flex sm:items-center sm:ms-6">
                                                     <x-dropdown align="right" width="48">
                                                         <x-slot name="trigger">
@@ -87,31 +88,32 @@
                                                                 </svg>
                                                             </button>
                                                         </x-slot>
-                                                        <x-slot name="content">                                  
+                                                        <x-slot name="content">
                                                                 @can('adminActions', $chat)
                                                                     @can('ownerActions', $chat)
-                                                                    <!-- Promote user -->
-                                                                    <form method="POST" action="{{ route('chats.promoteUser', compact('chat', 'user')) }}">
-                                                                        @csrf
-                                            
-                                                                        <x-dropdown-link :href="route('chats.promoteUser', compact('chat', 'user'))"
-                                                                                onclick="event.preventDefault();
-                                                                                            this.closest('form').submit();">
-                                                                            {{ __('Promote') }}
-                                                                        </x-dropdown-link>
-                                                                    </form>
+                                                                        <!-- Promote user -->
+                                                                        <form method="POST" action="{{ route('chats.promoteUser', compact('chat', 'user')) }}">
+                                                                            @csrf
+                                                
+                                                                            <x-dropdown-link :href="route('chats.promoteUser', compact('chat', 'user'))"
+                                                                                    onclick="event.preventDefault();
+                                                                                                this.closest('form').submit();">
+                                                                                {{ __('Promote') }}
+                                                                            </x-dropdown-link>
+                                                                        </form>
 
-                                                                    <!-- Demote user -->
-                                                                    <form method="POST" action="{{ route('chats.demoteUser', compact('chat', 'user')) }}">
-                                                                        @csrf
-                                            
-                                                                        <x-dropdown-link :href="route('chats.demoteUser', compact('chat', 'user'))"
-                                                                                onclick="event.preventDefault();
-                                                                                            this.closest('form').submit();">
-                                                                            {{ __('Demote') }}
-                                                                        </x-dropdown-link>
-                                                                    </form>
+                                                                        <!-- Demote user -->
+                                                                        <form method="POST" action="{{ route('chats.demoteUser', compact('chat', 'user')) }}">
+                                                                            @csrf
+                                                
+                                                                            <x-dropdown-link :href="route('chats.demoteUser', compact('chat', 'user'))"
+                                                                                    onclick="event.preventDefault();
+                                                                                                this.closest('form').submit();">
+                                                                                {{ __('Demote') }}
+                                                                            </x-dropdown-link>
+                                                                        </form>
                                                                     @endcan
+
                                                                     <!-- Kick user -->
                                                                     <form method="POST" action="{{ route('chats.kickUser', compact('chat', 'user')) }}">
                                                                         @csrf
@@ -124,8 +126,9 @@
                                                                     </form>
                                                                 @endcan
                                                             </x-slot>
-                                                    </x-dropdown>
-                                                </div>
+                                                        </x-dropdown>
+                                                    </div>
+                                                    @endif
                                             </div>
                                         </li>
                                     @endforeach
