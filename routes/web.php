@@ -17,6 +17,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/chats/{chat}/promote/{user}', [ChatController::class, 'promoteUser'])->name('chats.promoteUser');
     Route::post('/chats/{chat}/demote/{user}', [ChatController::class, 'demoteUser'])->name('chats.demoteUser');
     Route::post('/chats/{chat}/kick/{user}', [ChatController::class, 'kickUser'])->name('chats.kickUser');
+    Route::post('/chats/{chat}/leave', [ChatController::class, 'leave'])->name('chats.leave');
     Route::redirect('/', 'chats');
 });
 

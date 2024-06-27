@@ -212,6 +212,29 @@
                     </div>
                 </div>
             @endcan
+            @if ($chat->getUserRole($currentUser->id) !== 0)                
+                <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg flex flex-col items-center">
+                    <div class="max-w-xl w-full">                    
+                        <section class="space-y-6">
+                            <header>
+                                <h2 class="text-lg font-medium text-gray-900">
+                                    {{ __('Leave Chat') }}
+                                </h2>
+                            </header>
+                            <form method="POST" action="{{ route('chats.leave', $chat) }}">
+                                @csrf
+
+                                <x-danger-button
+                                    onclick="event.preventDefault();
+                                        this.closest('form').submit();"
+                                >
+                                    {{ __('Leave Chat') }}
+                                </x-danger-button>
+                            </form>
+                        </section>
+                    </div>
+                </div>
+            @endif
         </div>
     </div>
 </x-app-layout>

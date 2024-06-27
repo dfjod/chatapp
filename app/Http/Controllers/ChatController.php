@@ -146,7 +146,7 @@ class ChatController extends Controller
         }
 
         if ($currentUser->id === $user->id) {
-            return Redirect::back()->withErrors(['Owner can\'t promote himself']);
+            return Redirect::back()->withErrors(['User can\'t promote himself']);
         }
 
         if (!$chat->users()->where('user_id', $user->id)->exists()) {
@@ -167,7 +167,7 @@ class ChatController extends Controller
         }
 
         if ($currentUser->id === $user->id) {
-            return Redirect::back()->withErrors(['Owner can\'t demote himself']);
+            return Redirect::back()->withErrors(['User can\'t demote himself']);
         }
 
         if (!$chat->users()->where('user_id', $user->id)->exists()) {
@@ -205,5 +205,17 @@ class ChatController extends Controller
         $chat->users()->detach($user->id);
 
         return Redirect::route('chats.edit', $chat)->with('status', 'user-kicked');
+    }
+
+    public function leave(Chat $chat)
+    {
+        $user = auth()->user();
+        
+        if ($chat->getUserRole($user->id) === 0) {
+            return Redirect::back()->withErrors(['Owner can\'t leave']);
+        }
+
+        $chat->users()->detach($user->id);
+        return Redirect::route('chats.index')->with('status', 'Chat successfully left');
     }
 }
