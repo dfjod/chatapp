@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ChatController;
+use App\Http\Controllers\MessageController;
 use App\Http\Controllers\ProfileController;
 use App\Models\Chat;
 use Illuminate\Support\Facades\Route;
@@ -18,6 +19,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/chats/{chat}/demote/{user}', [ChatController::class, 'demoteUser'])->name('chats.demoteUser');
     Route::post('/chats/{chat}/kick/{user}', [ChatController::class, 'kickUser'])->name('chats.kickUser');
     Route::post('/chats/{chat}/leave', [ChatController::class, 'leave'])->name('chats.leave');
+    Route::post('/chats/{chat}/send', [MessageController::class, 'store'])->name('messages.send');
     Route::redirect('/', 'chats');
 });
 

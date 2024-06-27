@@ -62,7 +62,7 @@ class ChatController extends Controller
         $currentChat = $chat;
         $messages = $chat->messages;
 
-        return view('chat.show', compact('messages', 'currentChat'));
+        return view('chat.show', compact('messages', 'currentChat', 'chat'));
     }
 
     /**
